@@ -30,3 +30,4 @@ npm run electron:build
 ```
 
 ### Lembre-se de ligar o Backend antes de começar a utilizar o aplicativo. :)
+Qualquer dúvida sinta-se à vontade para entrar em contato no e-mail gabrielsmelo@eng.ci.ufpb.br
