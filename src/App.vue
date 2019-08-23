@@ -1,29 +1,108 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app light>
+    <v-app-bar app clipped-left :style="{background: $vuetify.theme.themes.light.background}">
+      <v-icon large light color="#f16124" >{{ icon }}</v-icon>
+      <h1 style="margin-left: 0.5em;" class="app-title">Vox Bookstore</h1>
+    </v-app-bar>
+
+    <v-navigation-drawer clipped app :mini-variant="isMobile" permanent>
+      <v-list>
+        <v-list-item v-for="item in menuList" :key="item.title" link :to="item.link" active-class="bold-text">
+          <v-list-item-icon>
+            <v-icon small color='#12275a'>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-content>
+
+      <!-- Provides the application the proper gutter -->
+      <v-container fluid>
+
+        <!-- Because of using vue-router -->
+        <router-view></router-view>
+      </v-container>
+    </v-content>
+
+    <v-footer app absolute :style="{background: $vuetify.theme.themes.light.footerBackground}">
+      <p style="margin: 0px; padding: 0px; font-size: 1em;" class="app-title">Gabriel Soares - 2019 ©</p>
+    </v-footer>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+
+  export default {
+    name: 'App',
+    components: {
+    },
+
+    data: () => ({
+      icon: 'fa-book',
+      menuList: [
+        { icon: 'fa-tachometer-alt', title: 'Dashboard', link: '/dashboard'},
+        { icon: 'fa-book-open', title: 'Biblioteca', link: '/biblioteca'},
+        { icon: 'fa-users', title: 'Clientes', link: '/clientes'}
+      ]
+    }),
+
+    computed: {
+      isMobile(){
+        return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+      }
+    },
+
+    created(){
+      /* Getting API data */
+      // Books
+      this.$api.get('/api/books')
+      .then(res => {
+        this.$store.state.books = res.data;
+      })
+      .catch(err => {
+        console.log('API Error:', err);
+      });
+
+      // Users
+      this.$api.get('/api/users')
+      .then(res => {
+        this.$store.state.users = res.data;
+      })
+      .catch(err => {
+        console.log('API Error:', err);
+      });
+
+      // Booking
+      this.$api.get('/api/booking')
+      .then(res => {
+        this.$store.state.bookings = res.data;
+      })
+      .catch(err => {
+        console.log('API Error:', err);
+      });
+    },
+
+    methods: {
+      
     }
+  };
+</script>
+
+<style lang="scss" scoped>
+
+  .app-title{
+    font-family: Lato;
+    font-weight: 400;
+    color: white;
   }
-}
+
+  .bold-text{
+    font-weight: bold;
+    color: #12275a;
+  }
+
 </style>
