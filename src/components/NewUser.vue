@@ -4,29 +4,12 @@
         <v-form class="mt-5" ref="form" v-model="valid" :lazy-validation="true">
             <v-text-field v-model="name" placeholder="Alex Silva" :rules="notEmpty" 
             label="Nome*" required/>
-            <v-dialog
-                ref="dialog"
-                v-model="modal"
-                :return-value.sync="birth"
-                persistent
-                full-width
-                width="290px"
-            >
-                <template v-slot:activator="{ on }">
-                <v-text-field
-                    v-model="birth" placeholder="06/05/1999"
-                    label="Data de Nascimento*"
-                    readonly required
-                    v-on="on"
-                ></v-text-field>
-                </template>
-                <v-date-picker v-model="birth" scrollable>
-                    <div class="flex-grow-1"></div>
-                    <v-btn text color="primary" @click="modal = false">Cancel</v-btn>
-                    <v-btn text color="primary" @click="$refs.dialog.save(birth)">OK</v-btn>
-                </v-date-picker>
-            </v-dialog>
-            <v-text-field v-model="cep" placeholder="58045-130" :rules="notEmpty" label="CEP*" required/>
+
+            <v-text-field ref="txtBirth" v-model="birth" placeholder="06/05/1999"
+             :rules="notEmpty" label="Data de Nascimento*" required @keyup="onBirthChange"/>
+
+            <v-text-field v-model="cep" @keyup="onCepChange" placeholder="58045-130"
+            :rules="notEmpty" label="CEP*" required/>
         </v-form>
         <v-row row justify="end">
             <v-btn color="secondary" @click="onSaveTap()">Salvar</v-btn>
@@ -36,6 +19,9 @@
 </template>
 
 <script>
+
+import StringMask from 'string-mask';
+
 export default {
     data(){
         return{
@@ -59,18 +45,27 @@ export default {
             this.$emit('closeModal');
         },
 
-        formatDate(date) {
-            if (!date) return null
+        onBirthChange(){
+            let mask = new StringMask('00/00/0000');
+            let maskResult = mask.apply(this.birth.replace(/[\W_]/g, ""));
 
-            const [year, month, day] = date.split('-')
-            return `${day}/${month}/${year}`
+            if(this.birth !== maskResult)
+                this.birth = maskResult;
+        },
+
+        onCepChange(){
+            let mask = new StringMask('00000-000');
+            let maskResult = mask.apply(this.cep.replace(/[\W_]/g, ""));
+
+            if(this.cep !== maskResult)
+                this.cep = maskResult;
         },
 
         onSaveTap(){
             if(this.$refs.form.validate()){
                 this.$api.post('/api/users', {
                     name: this.name,
-                    birth: this.formatDate(this.birth),
+                    birth: this.birth,
                     cep: this.cep,
                 })
                 .then( (res) => {

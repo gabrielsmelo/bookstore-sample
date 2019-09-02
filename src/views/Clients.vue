@@ -29,6 +29,9 @@
       no-results-text="Sua busca não gerou nenhum resultado."
       locale="pt-BR"
       >
+        <template v-slot:item.isActive="{item}">
+          <v-icon medium :color="item.isActive ? 'green' : 'red'">{{ item.isActive ? 'fa-check' : 'fa-times' }}</v-icon>
+        </template>
 
         <template v-slot:item.action="{item}">
           <v-icon
@@ -37,11 +40,16 @@
             @click="onEditTap(item)" disabled>
             {{ 'fa-edit '}}
           </v-icon>
-          <v-icon
-            small
-            @click="onDeleteTap(item)">
-            {{ 'fa-trash-alt '}}
-          </v-icon>
+          <v-tooltip top>
+            <template v-slot:activator="{on}">
+              <v-icon
+                small :color="item.isActive ? '' : 'red'" v-on="on"
+                @click="onDeleteTap(item)" :disabled="(item.isActive)">
+                {{ 'fa-trash-alt '}}
+              </v-icon>
+            </template>
+            <span style="font-size: 12px;">Excluir</span>
+          </v-tooltip>
         </template>
       </v-data-table>
 
@@ -75,7 +83,7 @@ export default {
         {
           text: 'Nome',
           align: 'left',
-          sortable: false,
+          sortable: true,
           value: 'name'
         },
         {
@@ -90,6 +98,12 @@ export default {
           sortable: false,
           value: 'cep'
         },
+        {
+          text: 'Ativo?',
+          align: 'center',
+          sortable: false,
+          value: 'isActive'
+        },
         { 
           text: 'Ações',
           value: 'action',
@@ -102,13 +116,18 @@ export default {
     };
   },
   
-  mounted(){
-    setInterval(() => {
-      this.personList = this.$store.state.users;
-      if(this.personList.length)
-        return;
-    }, 30);
+  computed: {
+    personListUpdated(){
+      return this.$store.state.users;
+    }
   },
+  
+  watch: {
+    personListUpdated(newValue, oldValue){
+      this.personList = newValue;
+    }
+  },
+
 
   methods: {
 
@@ -136,7 +155,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped>
 
   .radio-btn label{
     font-size: 12px;

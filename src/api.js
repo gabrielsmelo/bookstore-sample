@@ -9,3 +9,5 @@ Vue.use({
         Vue.prototype.$api = axios;
     }
 })
+
+export default axios;

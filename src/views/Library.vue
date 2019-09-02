@@ -29,10 +29,16 @@
       no-results-text="Sua busca não gerou nenhum resultado."
       locale="pt-BR"
       >
-        <template v-slot:item.available="{item}">
-          <v-chip :color="getColor(item.available)" dark>
-            <v-icon small>{{ item.available ? 'fa-check' : 'fa-times' }}</v-icon>
-          </v-chip>
+        <template v-slot:item.using="{item}">
+          <v-icon medium :color="item.using ? 'green' : 'red'">{{ item.using ? 'fa-check' : 'fa-times' }}</v-icon>
+        </template>
+
+        <template v-slot:item.value="{item}">
+          R$ {{ item.value.toFixed(2) }}
+        </template>
+
+        <template v-slot:item.quantity="{item}">
+          {{ item.amountUsed + ' / ' + item.quantity }}
         </template>
 
         <template v-slot:item.action="{item}">
@@ -42,11 +48,16 @@
             @click="onEditTap(item)" disabled>
             {{ 'fa-edit '}}
           </v-icon>
-          <v-icon
-            small
-            @click="onDeleteTap(item)">
-            {{ 'fa-trash-alt '}}
-          </v-icon>
+          <v-tooltip top>
+            <template v-slot:activator="{on}">
+              <v-icon
+                small :color="item.using ? '' : 'red'" v-on="on"
+                @click="onDeleteTap(item)" :disabled="(item.using == true)">
+                {{ 'fa-trash-alt '}}
+              </v-icon>
+            </template>
+            <span style="font-size: 12px;">Excluir</span>
+          </v-tooltip>
         </template>
       </v-data-table>
 
@@ -80,19 +91,19 @@ export default {
         {
           text: 'Nome',
           align: 'left',
-          sortable: false,
+          sortable: true,
           value: 'name'
         },
         {
           text: 'Autor',
           align: 'left',
-          sortable: false,
+          sortable: true,
           value: 'author'
         },
         {
           text: 'Editora',
           align: 'left',
-          sortable: false,
+          sortable: true,
           value: 'publisher'
         },
         {
@@ -102,16 +113,22 @@ export default {
           value: 'edition'
         },
         {
-          text: 'Quantidade',
+          text: 'Transações ativas / Total de Livros',
           align: 'center',
           sortable: true,
           value: 'quantity'
         },
         {
-          text: 'Disponibilidade',
+          text: 'Valor por dia (R$)',
           align: 'center',
           sortable: true,
-          value: 'available'
+          value: 'value'
+        },
+        {
+          text: 'Em uso?',
+          align: 'center',
+          sortable: true,
+          value: 'using'
         },
         { 
           text: 'Ações',
@@ -121,16 +138,20 @@ export default {
       ],
       searchVar: '',
       isOpen: false,
-      bookList: this.$store.state.books,
+      bookList: this.$store.state.books
     };
   },
   
-  mounted(){
-    setInterval(() => {
-      this.bookList = this.$store.state.books;
-      if(this.bookList.length)
-        return;
-    }, 30);
+  computed: {
+    bookListUpdated(){
+      return this.$store.state.books;
+    }
+  },
+  
+  watch: {
+    bookListUpdated(newValue, oldValue){
+      this.bookList = newValue;
+    }
   },
 
   methods: {

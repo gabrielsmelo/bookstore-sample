@@ -56,10 +56,10 @@
       }
     },
 
-    created(){
+    async created(){
       /* Getting API data */
       // Books
-      this.$api.get('/api/books')
+      await this.$api.get('/api/books')
       .then(res => {
         this.$store.state.books = res.data;
       })
@@ -68,7 +68,7 @@
       });
 
       // Users
-      this.$api.get('/api/users')
+      await this.$api.get('/api/users')
       .then(res => {
         this.$store.state.users = res.data;
       })
@@ -77,13 +77,22 @@
       });
 
       // Booking
-      this.$api.get('/api/booking')
+      await this.$api.get('/api/booking')
       .then(res => {
-        this.$store.state.bookings = res.data;
+        this.$store.state.rents = res.data.filter( (el) => {
+        return !el.retrieveDate;
+        });
+
+        this.$store.state.bookings = res.data.filter( (el) => {
+          return el.retrieveDate;
+        });
       })
       .catch(err => {
         console.log('API Error:', err);
       });
+
+      // Flux on next days
+      this.$util.movementOnNextDays();
     },
 
     methods: {

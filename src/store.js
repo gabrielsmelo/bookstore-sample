@@ -7,7 +7,9 @@ export default new Vuex.Store({
   state: {
     books: [],
     users: [],
-    bookings: []
+    rents: [],
+    bookings: [],
+    fluxValues: []
   },
 
   mutations: {
@@ -21,9 +23,27 @@ export default new Vuex.Store({
     },
     
     registerBooking(state, bookingObj) {
-      state.bookings.push(bookingObj);
+      let bookIndex = state.books.findIndex( (el) => {
+        return el.name == bookingObj.bookName;
+      });
+      state.books[bookIndex].available = false;
+
+      if(bookingObj.retrieveDate)
+        state.bookings.push(bookingObj);
+      else
+        state.rents.push(bookingObj);
     },
 
+    removeBooking(state, bookingObj){
+      let bookingIndex = state.bookings.findIndex( (el) => {
+        return el._id == bookingObj._id;
+      });
+      state.bookings.splice(bookingIndex);
+    },
+
+    registerFluxValues(state, values){
+      state.fluxValues = values;
+    }
   },
 
   actions: {
@@ -38,5 +58,13 @@ export default new Vuex.Store({
     registerBooking: ({commit}, bookingObj) => {
       commit('registerBooking', bookingObj);
     },
+
+    removeBooking: ({commit}, bookingObj) => {
+      commit('removeBooking', bookingObj);
+    },
+
+    registerFluxValues({commit}, values){
+      commit('registerFluxValues', values);
+    }
   }
 })
