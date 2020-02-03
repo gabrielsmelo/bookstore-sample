@@ -1,33 +1,34 @@
-# desafio-digivox
+# bookstore-sample
 
-## Instalação do projeto
-É imprescindível ter o NodeJS instalado na máquina e configurado como variável de ambiente no caso do Windows.
-É possível fazer a instalação neste [link](https://nodejs.org/en/) aqui.
+## Install
 
-Com o NodeJS instalado, basta clonar este repositório e executar o comando:
+It is essential to have NodeJS installed on the machine and configured as an environment variable in the case of Windows.
+You can do the installation at this [link] (https://nodejs.org/en/) here.
+
+With NodeJS installed, just clone this repository and run the command:
 ```
 npm install
 ```
 
-### Compilação para Desenvolvimento (Possui Hot-Reloads)
+### Development compilation (with Hot-Reloads)
 ```
 npm run serve
 ```
 
-### Compilação para Produção (Diminui tamanho dos arquivos)
+### Production Compilation (minifies the files)
 ```
 npm run build
 ```
 
-### Compilação para Desktop (Desenvolvimento)
+### Desktop compilation (development) w/ Electron
 ```
 npm run electron:serve
 ```
 
-### Compilação para Desktop (Produção)
+### Desktop compilation (production) w/ Electron
 ```
 npm run electron:build
 ```
 
-### Lembre-se de ligar o Backend antes de começar a utilizar o aplicativo. :)
-Qualquer dúvida sinta-se à vontade para entrar em contato no e-mail gabrielsmelo@eng.ci.ufpb.br
+### Remember to turn on the Backend before starting to use the application. :)
+Any questions, feel free to contact me at gabrielsmelo.dev@gmail.com
